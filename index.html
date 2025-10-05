@@ -1,281 +1,510 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="monetag" content="39a4e6072a60f335f4a48bd637537ae5">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Money Clicker: The App Bot</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>JPG to PDF Converter</title>
     <style>
-        /* Custom styles for a better visual experience on mobile */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0d1117; /* Dark background */
+        /* Basic styling for your content */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 20px; 
+            line-height: 1.6; 
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+        }
+        .content { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .ad-container { 
+            margin: 30px 0; 
+            padding: 15px; 
+            border: 2px dashed #ccc;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 1rem;
+            min-height: 250px;
+            background-color: #f9f9f9;
+            text-align: center; /* Ensures content inside is centered */
         }
-        .container {
-            width: 100%;
-            max-width: 420px; /* Mobile width constraint */
-            background-color: #161b22;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        h1, h2 { 
+            text-align: center; 
+            color: #2c3e50;
         }
-        .main-click-button {
-            transition: transform 0.1s ease, box-shadow 0.1s ease;
-            box-shadow: 0 0 15px #38a169;
+        
+        /* Converter styles */
+        .converter-container {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            background-color: #f8fafc;
         }
-        .main-click-button:active {
-            transform: scale(0.98);
-            box-shadow: 0 0 5px #38a169;
-        }
-        .upgrade-card {
-            transition: background-color 0.2s;
+        
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
             cursor: pointer;
+            transition: all 0.3s;
+            background-color: #ecf0f1;
+            margin-bottom: 20px;
         }
-        .upgrade-card:hover {
-            background-color: #21262d;
+        
+        .upload-area:hover {
+            background-color: #d6eaf8;
+            border-color: #2980b9;
         }
-        .upgrade-card.disabled {
-            opacity: 0.5;
+        
+        .upload-area p {
+            margin: 0;
+            font-size: 18px;
+            color: #3498db;
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: #3498db;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .preview-container {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin: 10px 5px;
+        }
+        
+        .button:hover {
+            background-color: #2980b9;
+        }
+        
+        .button:disabled {
+            background-color: #95a5a6;
             cursor: not-allowed;
         }
-        /* Style for the ad placeholder to ensure it has space to load */
-        #ad-placeholder {
-            min-height: 50px; /* Minimum height for a standard banner ad */
-            display: flex;
+        
+        .button-convert {
+            background-color: #2ecc71;
+        }
+        
+        .button-convert:hover {
+            background-color: #27ae60;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #d5f4e6;
+            color: #27ae60;
+            border: 1px solid #2ecc71;
+        }
+        
+        .status-error {
+            background-color: #fadbd8;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+        
+        .ad-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
             justify-content: center;
             align-items: center;
+        }
+        
+        .ad-popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+        
+        .close-ad {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .close-ad:hover {
+            color: #e74c3c;
+        }
+        
+        .image-list {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .image-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .image-item:last-child {
+            border-bottom: none;
+        }
+        
+        .remove-image {
+            color: #e74c3c;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 18px;
+        }
+        
+        .new-ad-container {
+            margin: 20px 0;
             text-align: center;
         }
+        
+        @media (max-width: 600px) {
+            .content {
+                padding: 15px;
+            }
+            
+            .upload-area {
+                padding: 20px 10px;
+            }
+            
+            .button {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
     </style>
-
-    <!-- START OF MONETIZATION SCRIPTS -->
-    <!-- Original Script -->
-    <script src='//libtl.com/sdk.js' data-zone='9975579' data-sdk='show_9975579'></script>
-
-    <!-- New Zone 1 -->
-    <script>(function(s){s.dataset.zone='9977889',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
-    <!-- New Zone 2 -->
-    <script>(function(s){s.dataset.zone='9977900',s.src='https://forfrogadiertor.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
-    <!-- New Zone 3 (Vignette) -->
-    <script>(function(s){s.dataset.zone='9977909',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <!-- END OF MONETIZATION SCRIPTS -->
 </head>
 <body>
 
-    <div id="game-container" class="container rounded-2xl p-4 text-white">
-
-        <!-- Header and Score -->
-        <header class="text-center mb-6">
-            <h1 class="text-3xl font-black text-green-400">Money Clicker Bot</h1>
-            <p class="text-sm text-gray-400 mt-1">Tap to build your fortune!</p>
-            <div class="mt-4 p-4 bg-gray-800 rounded-xl shadow-inner">
-                <span class="text-xl font-bold block text-gray-300">Total Money:</span>
-                <span id="money-display" class="text-5xl font-extrabold text-green-500">$0</span>
+    <div class="content">
+        <h1>JPG to PDF Converter</h1>
+        <p>Easily convert your JPG images to PDF format. Upload your images, convert them, and download the PDF.</p>
+        
+        <div class="new-ad-container">
+            <h2>Display Ad Zone</h2>
+            <div class="ad-container">
+                <p>Ad content will load here (e.g., Zone ID: 9975579)</p>
+                <div id="new-ad-slot-1"></div>
             </div>
-        </header>
+        </div>
 
-        <!-- Main Click Area -->
-        <main class="flex justify-center mb-6">
-            <button id="click-button"
-                    class="main-click-button bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-black py-8 px-10 rounded-full text-2xl w-40 h-40 flex items-center justify-center border-4 border-green-400">
-                TAP!
-            </button>
-        </main>
+        <h2>Another Ad Spot</h2>
+        <div class="ad-container">
+            <p>Ad content will load here (e.g., Zone ID: 9977971)</p>
+            <div id="new-ad-slot-2"></div>
+        </div>
 
-        <!-- Upgrades Section -->
-        <section class="mb-6">
-            <h2 class="text-xl font-bold text-gray-300 mb-3">Upgrades</h2>
-            <div id="upgrades-list" class="space-y-3">
-                <!-- Upgrade 1: Faster Fingers -->
-                <div id="upgrade-1" class="upgrade-card p-3 rounded-lg border border-gray-700 bg-gray-800 flex justify-between items-center" data-cost="50" data-cpm="1" data-rate="2">
-                    <div>
-                        <p class="font-bold text-green-300">Fast Clicker ($<span class="cost-display">50</span>)</p>
-                        <p class="text-sm text-gray-400">Click earns +2 (Currently: $<span class="current-rate">1</span> per click)</p>
-                    </div>
-                    <button class="buy-button bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm">Buy</button>
-                </div>
-
-                <!-- Upgrade 2: Automated Bot -->
-                <div id="upgrade-2" class="upgrade-card p-3 rounded-lg border border-gray-700 bg-gray-800 flex justify-between items-center" data-cost="200" data-cpm="5" data-rate="0">
-                    <div>
-                        <p class="font-bold text-green-300">Auto-Bot ($<span class="cost-display">200</span>)</p>
-                        <p class="text-sm text-gray-400">Earns +5/sec (Currently: $<span class="current-rate">0</span>/sec)</p>
-                    </div>
-                    <button class="buy-button bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm">Buy</button>
-                </div>
-
+        <div class="converter-container">
+            <h2>Convert Your Images</h2>
+            
+            <div class="upload-area" id="uploadArea">
+                <i>📁</i>
+                <p>Click here or drag and drop your JPG images</p>
+                <input type="file" id="fileInput" class="file-input" accept=".jpg,.jpeg,.png" multiple>
             </div>
-        </section>
-
-        <!-- Ad Placeholder Area (For banner/native ads) -->
-        <footer class="text-center mt-6">
-            <div id="ad-placeholder" class="p-2 bg-gray-900 rounded-lg border border-red-500 text-gray-500 text-xs">
-                ADVERTISEMENT LOADING ZONE (Multiple Networks)
+            
+            <div class="image-list" id="imageList"></div>
+            
+            <div class="preview-container" id="previewContainer">
+                <h3>Image Preview</h3>
+                <img id="previewImage" class="preview-image" src="" alt="Preview">
             </div>
-        </footer>
-
+            
+            <div style="text-align: center;">
+                <button id="convertButton" class="button button-convert" disabled>Convert to PDF</button>
+                <button id="clearButton" class="button" disabled>Clear Images</button>
+            </div>
+            
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+        
+        <p>Here is more content on the page.</p>
+    </div>
+    
+    <div class="ad-popup" id="adPopup">
+        <div class="ad-popup-content">
+            <span class="close-ad" id="closeAd">&times;</span>
+            <h3>Special Offer!</h3>
+            <p>Thank you for using our converter! Check out this special offer:</p>
+            <div class="ad-container">
+                <p>Popup Ad Content Placeholder</p>
+                <div id="popup-ad-slot"></div>
+            </div>
+            <p>This ad helps keep our service free. Thank you for your support!</p>
+        </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <script src='//libtl.com/sdk.js' data-zone='9975579' data-sdk='show_9975579'></script>
+    
+    <script async src="https://groleegni.net/native.min.js"></script>
+    
+    <script>(function(s){s.dataset.zone='9975972',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+    <script>(function(s){s.dataset.zone='9977971',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+    <script>(function(s){s.dataset.zone='9977987',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+    <script>(function(s){s.dataset.zone='9978000',s.src='https://forfrogadiertor.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+    <p style="text-align: center; margin-top: 20px;"><a href="https://otieu.com/4/9977497" target="_blank">Click Here for an Exclusive Offer!</a></p>
+
     <script>
-        // Global variables for game state
-        let money = 0;
-        let moneyPerClick = 1;
-        let moneyPerSecond = 0;
-        const gameTickInterval = 1000; // 1 second
-
-        // DOM elements
-        const moneyDisplay = document.getElementById('money-display');
-        const clickButton = document.getElementById('click-button');
-        const upgradesList = document.getElementById('upgrades-list');
-        const upgradeElements = document.querySelectorAll('.upgrade-card');
-
-        // Utility function to format numbers
-        function formatMoney(amount) {
-            return `$${Math.floor(amount).toLocaleString('en-US')}`;
-        }
-
-        // 1. Game State Update Function
-        function updateDisplay() {
-            moneyDisplay.textContent = formatMoney(money);
-
-            // Update upgrade states and displays
-            upgradeElements.forEach(el => {
-                const cost = parseInt(el.dataset.cost);
-                const isClickUpgrade = el.dataset.rate !== '0';
-
-                // Check if the user can afford the upgrade
-                if (money >= cost) {
-                    el.classList.remove('disabled');
-                } else {
-                    el.classList.add('disabled');
+        // Initialize variables
+        let uploadedImages = [];
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const convertButton = document.getElementById('convertButton');
+        const clearButton = document.getElementById('clearButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const imageList = document.getElementById('imageList');
+        const adPopup = document.getElementById('adPopup');
+        const closeAd = document.getElementById('closeAd');
+        
+        // Event listeners
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = '#d6eaf8';
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.backgroundColor = '#ecf0f1';
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = '#ecf0f1';
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+        
+        convertButton.addEventListener('click', convertToPdf);
+        clearButton.addEventListener('click', clearImages);
+        closeAd.addEventListener('click', () => {
+            adPopup.style.display = 'none';
+        });
+        
+        // Handle file uploads
+        function handleFiles(files) {
+            if (files.length === 0) return;
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // Check if file is an image
+                if (!file.type.match('image.*')) {
+                    showStatus('Please upload only image files (JPG, PNG).', 'error');
+                    continue;
                 }
-
-                // Update current rates shown in the description
-                if (isClickUpgrade) {
-                    el.querySelector('.current-rate').textContent = moneyPerClick;
-                } else {
-                    el.querySelector('.current-rate').textContent = moneyPerSecond;
-                }
-            });
-        }
-
-        // 2. Click Handler
-        function handleManualClick() {
-            money += moneyPerClick;
-            updateDisplay();
-
-            // Create a floating feedback text
-            const feedback = document.createElement('span');
-            feedback.textContent = `+${moneyPerClick}`;
-            feedback.style.cssText = `
-                position: absolute;
-                color: #48bb78;
-                font-weight: 900;
-                font-size: 1.5rem;
-                pointer-events: none;
-                animation: floatup 1s ease-out forwards;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-            `;
-
-            // Append near the button
-            clickButton.style.position = 'relative';
-            const rect = clickButton.getBoundingClientRect();
-            feedback.style.left = `${rect.width / 2}px`;
-            feedback.style.top = `${rect.height / 2}px`;
-
-            clickButton.appendChild(feedback);
-            setTimeout(() => feedback.remove(), 1000); // Remove after animation
-
-            // Define the CSS keyframe animation for floating up
-            if (!document.getElementById('floatup-style')) {
-                const style = document.createElement('style');
-                style.id = 'floatup-style';
-                style.textContent = `
-                    @keyframes floatup {
-                        to {
-                            transform: translate(-50%, -150%);
-                            opacity: 0;
-                        }
+                
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    const imageData = {
+                        name: file.name,
+                        data: e.target.result
+                    };
+                    
+                    uploadedImages.push(imageData);
+                    updateImageList();
+                    updateButtons();
+                    
+                    // Show preview of the first image
+                    if (uploadedImages.length === 1) {
+                        previewImage.src = imageData.data;
+                        previewContainer.style.display = 'block';
                     }
-                `;
-                document.head.appendChild(style);
+                };
+                
+                reader.readAsDataURL(file);
             }
+            
+            // Reset file input
+            fileInput.value = '';
         }
-
-        // 3. Upgrade Handler
-        function handleUpgradePurchase(e) {
-            const button = e.target.closest('.buy-button');
-            if (!button) return;
-
-            const card = button.closest('.upgrade-card');
-            if (card.classList.contains('disabled')) {
-                console.log("Not enough money for this upgrade.");
+        
+        // Update the image list display
+        function updateImageList() {
+            imageList.innerHTML = '';
+            
+            if (uploadedImages.length === 0) {
+                imageList.style.display = 'none';
                 return;
             }
-
-            const cost = parseInt(card.dataset.cost);
-            const clickRateIncrease = parseInt(card.dataset.rate);
-            const idleRateIncrease = parseInt(card.dataset.cpm);
-
-            if (money >= cost) {
-                money -= cost;
-
-                if (clickRateIncrease > 0) {
-                    moneyPerClick += clickRateIncrease;
-                }
-                if (idleRateIncrease > 0) {
-                    moneyPerSecond += idleRateIncrease;
-                }
-
-                // Increase the cost for the next purchase
-                card.dataset.cost = Math.floor(cost * 1.5); // 50% cost increase
-                card.querySelector('.cost-display').textContent = card.dataset.cost;
-
-                // Provide visual feedback
-                button.textContent = 'Bought!';
-                setTimeout(() => button.textContent = 'Buy', 500);
-
-                updateDisplay();
+            
+            imageList.style.display = 'block';
+            
+            uploadedImages.forEach((image, index) => {
+                const item = document.createElement('div');
+                item.className = 'image-item';
+                
+                const name = document.createElement('span');
+                name.textContent = image.name;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-image';
+                removeBtn.innerHTML = '&times;';
+                removeBtn.addEventListener('click', () => removeImage(index));
+                
+                item.appendChild(name);
+                item.appendChild(removeBtn);
+                imageList.appendChild(item);
+            });
+        }
+        
+        // Remove an image from the list
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            updateImageList();
+            updateButtons();
+            
+            if (uploadedImages.length === 0) {
+                previewContainer.style.display = 'none';
+            } else {
+                // Show the first image as preview
+                previewImage.src = uploadedImages[0].data;
             }
         }
-
-        // 4. Automatic Earning Loop (The "Bot" part)
-        function gameLoop() {
-            money += moneyPerSecond;
-            updateDisplay();
+        
+        // Clear all images
+        function clearImages() {
+            uploadedImages = [];
+            updateImageList();
+            updateButtons();
+            previewContainer.style.display = 'none';
         }
-
-        // 5. Initialize Game on Load
-        window.onload = function() {
-            // Set up event listeners
-            clickButton.addEventListener('click', handleManualClick);
-            upgradesList.addEventListener('click', handleUpgradePurchase);
-
-            // Start the automatic earning loop
-            setInterval(gameLoop, gameTickInterval);
-
-            // Initial display update
-            updateDisplay();
-        };
-
-        // Fallback for click button style on touch devices
-        clickButton.addEventListener('touchstart', function() {
-            this.classList.add('scale-98', 'shadow-sm');
-        }, { passive: true });
-        clickButton.addEventListener('touchend', function() {
-            this.classList.remove('scale-98', 'shadow-sm');
-        }, { passive: true });
-
+        
+        // Update button states based on whether we have images
+        function updateButtons() {
+            convertButton.disabled = uploadedImages.length === 0;
+            clearButton.disabled = uploadedImages.length === 0;
+        }
+        
+        // Convert images to PDF
+        function convertToPdf() {
+            if (uploadedImages.length === 0) {
+                showStatus('Please upload at least one image first.', 'error');
+                return;
+            }
+            
+            showStatus('Converting images to PDF...', 'success');
+            
+            // Use jsPDF to create PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add each image to the PDF
+            uploadedImages.forEach((image, index) => {
+                if (index > 0) {
+                    doc.addPage();
+                }
+                
+                // Get image dimensions
+                const img = new Image();
+                img.src = image.data;
+                
+                img.onload = function() {
+                    const imgWidth = doc.internal.pageSize.getWidth();
+                    const imgHeight = (img.height * imgWidth) / img.width;
+                    
+                    // Add image to PDF
+                    doc.addImage(image.data, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    
+                    // If this is the last image, save the PDF
+                    if (index === uploadedImages.length - 1) {
+                        // Save the PDF
+                        doc.save('converted_images.pdf');
+                        
+                        showStatus('PDF successfully created and downloaded!', 'success');
+                        
+                        // Show ad popup after a short delay
+                        setTimeout(() => {
+                            // This popup logic is kept but will not load your new ad zones automatically.
+                            adPopup.style.display = 'flex';
+                            loadNewAdInPopup();
+                        }, 1000);
+                    }
+                };
+            });
+        }
+        
+        // Show status message
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message status-${type}`;
+            statusMessage.style.display = 'block';
+            
+            // Hide status after 5 seconds
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Function to load new ad in popup if needed
+        function loadNewAdInPopup() {
+            // Placeholder: If you need a specific ad to load in the popup, you would add the SDK call here.
+            console.log('Ad popup displayed - potential for additional ad loading');
+        }
     </script>
+
 </body>
 </html>
-
