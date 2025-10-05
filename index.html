@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Clicker: The App Bot</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a better visual experience on mobile */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* Dark background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .container {
+            width: 100%;
+            max-width: 420px; /* Mobile width constraint */
+            background-color: #161b22;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .main-click-button {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            box-shadow: 0 0 15px #38a169;
+        }
+        .main-click-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 0 5px #38a169;
+        }
+        .upgrade-card {
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .upgrade-card:hover {
+            background-color: #21262d;
+        }
+        .upgrade-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* Style for the ad placeholder to ensure it has space to load */
+        #ad-placeholder {
+            min-height: 50px; /* Minimum height for a standard banner ad */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+    </style>
+
+    <!-- START OF MONETIZATION SCRIPTS -->
+    <!-- Original Script -->
+    <script src='//libtl.com/sdk.js' data-zone='9975579' data-sdk='show_9975579'></script>
+
+    <!-- New Zone 1 -->
+    <script>(function(s){s.dataset.zone='9977889',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+    <!-- New Zone 2 -->
+    <script>(function(s){s.dataset.zone='9977900',s.src='https://forfrogadiertor.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+    <!-- New Zone 3 (Vignette) -->
+    <script>(function(s){s.dataset.zone='9977909',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <!-- END OF MONETIZATION SCRIPTS -->
+</head>
+<body>
+
+    <div id="game-container" class="container rounded-2xl p-4 text-white">
+
+        <!-- Header and Score -->
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-black text-green-400">Money Clicker Bot</h1>
+            <p class="text-sm text-gray-400 mt-1">Tap to build your fortune!</p>
+            <div class="mt-4 p-4 bg-gray-800 rounded-xl shadow-inner">
+                <span class="text-xl font-bold block text-gray-300">Total Money:</span>
+                <span id="money-display" class="text-5xl font-extrabold text-green-500">$0</span>
+            </div>
+        </header>
+
+        <!-- Main Click Area -->
+        <main class="flex justify-center mb-6">
+            <button id="click-button"
+                    class="main-click-button bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-black py-8 px-10 rounded-full text-2xl w-40 h-40 flex items-center justify-center border-4 border-green-400">
+                TAP!
+            </button>
+        </main>
+
+        <!-- Upgrades Section -->
+        <section class="mb-6">
+            <h2 class="text-xl font-bold text-gray-300 mb-3">Upgrades</h2>
+            <div id="upgrades-list" class="space-y-3">
+                <!-- Upgrade 1: Faster Fingers -->
+                <div id="upgrade-1" class="upgrade-card p-3 rounded-lg border border-gray-700 bg-gray-800 flex justify-between items-center" data-cost="50" data-cpm="1" data-rate="2">
+                    <div>
+                        <p class="font-bold text-green-300">Fast Clicker ($<span class="cost-display">50</span>)</p>
+                        <p class="text-sm text-gray-400">Click earns +2 (Currently: $<span class="current-rate">1</span> per click)</p>
+                    </div>
+                    <button class="buy-button bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm">Buy</button>
+                </div>
+
+                <!-- Upgrade 2: Automated Bot -->
+                <div id="upgrade-2" class="upgrade-card p-3 rounded-lg border border-gray-700 bg-gray-800 flex justify-between items-center" data-cost="200" data-cpm="5" data-rate="0">
+                    <div>
+                        <p class="font-bold text-green-300">Auto-Bot ($<span class="cost-display">200</span>)</p>
+                        <p class="text-sm text-gray-400">Earns +5/sec (Currently: $<span class="current-rate">0</span>/sec)</p>
+                    </div>
+                    <button class="buy-button bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm">Buy</button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Ad Placeholder Area (For banner/native ads) -->
+        <footer class="text-center mt-6">
+            <div id="ad-placeholder" class="p-2 bg-gray-900 rounded-lg border border-red-500 text-gray-500 text-xs">
+                ADVERTISEMENT LOADING ZONE (Multiple Networks)
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // Global variables for game state
+        let money = 0;
+        let moneyPerClick = 1;
+        let moneyPerSecond = 0;
+        const gameTickInterval = 1000; // 1 second
+
+        // DOM elements
+        const moneyDisplay = document.getElementById('money-display');
+        const clickButton = document.getElementById('click-button');
+        const upgradesList = document.getElementById('upgrades-list');
+        const upgradeElements = document.querySelectorAll('.upgrade-card');
+
+        // Utility function to format numbers
+        function formatMoney(amount) {
+            return `$${Math.floor(amount).toLocaleString('en-US')}`;
+        }
+
+        // 1. Game State Update Function
+        function updateDisplay() {
+            moneyDisplay.textContent = formatMoney(money);
+
+            // Update upgrade states and displays
+            upgradeElements.forEach(el => {
+                const cost = parseInt(el.dataset.cost);
+                const isClickUpgrade = el.dataset.rate !== '0';
+
+                // Check if the user can afford the upgrade
+                if (money >= cost) {
+                    el.classList.remove('disabled');
+                } else {
+                    el.classList.add('disabled');
+                }
+
+                // Update current rates shown in the description
+                if (isClickUpgrade) {
+                    el.querySelector('.current-rate').textContent = moneyPerClick;
+                } else {
+                    el.querySelector('.current-rate').textContent = moneyPerSecond;
+                }
+            });
+        }
+
+        // 2. Click Handler
+        function handleManualClick() {
+            money += moneyPerClick;
+            updateDisplay();
+
+            // Create a floating feedback text
+            const feedback = document.createElement('span');
+            feedback.textContent = `+${moneyPerClick}`;
+            feedback.style.cssText = `
+                position: absolute;
+                color: #48bb78;
+                font-weight: 900;
+                font-size: 1.5rem;
+                pointer-events: none;
+                animation: floatup 1s ease-out forwards;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            `;
+
+            // Append near the button
+            clickButton.style.position = 'relative';
+            const rect = clickButton.getBoundingClientRect();
+            feedback.style.left = `${rect.width / 2}px`;
+            feedback.style.top = `${rect.height / 2}px`;
+
+            clickButton.appendChild(feedback);
+            setTimeout(() => feedback.remove(), 1000); // Remove after animation
+
+            // Define the CSS keyframe animation for floating up
+            if (!document.getElementById('floatup-style')) {
+                const style = document.createElement('style');
+                style.id = 'floatup-style';
+                style.textContent = `
+                    @keyframes floatup {
+                        to {
+                            transform: translate(-50%, -150%);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // 3. Upgrade Handler
+        function handleUpgradePurchase(e) {
+            const button = e.target.closest('.buy-button');
+            if (!button) return;
+
+            const card = button.closest('.upgrade-card');
+            if (card.classList.contains('disabled')) {
+                console.log("Not enough money for this upgrade.");
+                return;
+            }
+
+            const cost = parseInt(card.dataset.cost);
+            const clickRateIncrease = parseInt(card.dataset.rate);
+            const idleRateIncrease = parseInt(card.dataset.cpm);
+
+            if (money >= cost) {
+                money -= cost;
+
+                if (clickRateIncrease > 0) {
+                    moneyPerClick += clickRateIncrease;
+                }
+                if (idleRateIncrease > 0) {
+                    moneyPerSecond += idleRateIncrease;
+                }
+
+                // Increase the cost for the next purchase
+                card.dataset.cost = Math.floor(cost * 1.5); // 50% cost increase
+                card.querySelector('.cost-display').textContent = card.dataset.cost;
+
+                // Provide visual feedback
+                button.textContent = 'Bought!';
+                setTimeout(() => button.textContent = 'Buy', 500);
+
+                updateDisplay();
+            }
+        }
+
+        // 4. Automatic Earning Loop (The "Bot" part)
+        function gameLoop() {
+            money += moneyPerSecond;
+            updateDisplay();
+        }
+
+        // 5. Initialize Game on Load
+        window.onload = function() {
+            // Set up event listeners
+            clickButton.addEventListener('click', handleManualClick);
+            upgradesList.addEventListener('click', handleUpgradePurchase);
+
+            // Start the automatic earning loop
+            setInterval(gameLoop, gameTickInterval);
+
+            // Initial display update
+            updateDisplay();
+        };
+
+        // Fallback for click button style on touch devices
+        clickButton.addEventListener('touchstart', function() {
+            this.classList.add('scale-98', 'shadow-sm');
+        }, { passive: true });
+        clickButton.addEventListener('touchend', function() {
+            this.classList.remove('scale-98', 'shadow-sm');
+        }, { passive: true });
+
+    </script>
+</body>
+</html>
+
