@@ -212,6 +212,53 @@
             text-align: center;
         }
         
+        /* Interstitial ad styles */
+        .interstitial-ad {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .interstitial-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+        
+        .interstitial-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+            background: none;
+            border: none;
+        }
+        
+        .interstitial-close:hover {
+            color: #e74c3c;
+        }
+        
+        .countdown-timer {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
         @media (max-width: 600px) {
             .content {
                 padding: 15px;
@@ -275,6 +322,21 @@
         <p>Here is more content on the page.</p>
     </div>
     
+    <!-- Interstitial Ad -->
+    <div class="interstitial-ad" id="interstitialAd">
+        <div class="interstitial-content">
+            <button class="interstitial-close" id="interstitialClose" disabled>&times;</button>
+            <h3>Advertisement</h3>
+            <div class="ad-container">
+                <p>Interstitial Ad Content</p>
+                <div id="interstitial-ad-slot"></div>
+            </div>
+            <div class="countdown-timer" id="countdownTimer">
+                Ad can be closed in <span id="countdown">10</span> seconds
+            </div>
+        </div>
+    </div>
+    
     <div class="ad-popup" id="adPopup">
         <div class="ad-popup-content">
             <span class="close-ad" id="closeAd">&times;</span>
@@ -318,6 +380,15 @@
         const adPopup = document.getElementById('adPopup');
         const closeAd = document.getElementById('closeAd');
         
+        // Interstitial ad variables
+        const interstitialAd = document.getElementById('interstitialAd');
+        const interstitialClose = document.getElementById('interstitialClose');
+        const countdownTimer = document.getElementById('countdownTimer');
+        const countdownDisplay = document.getElementById('countdown');
+        let interstitialInterval;
+        let countdownInterval;
+        let countdownValue = 10;
+        
         // Event listeners
         uploadArea.addEventListener('click', () => fileInput.click());
         uploadArea.addEventListener('dragover', (e) => {
@@ -342,6 +413,50 @@
         closeAd.addEventListener('click', () => {
             adPopup.style.display = 'none';
         });
+        
+        // Interstitial ad event listeners
+        interstitialClose.addEventListener('click', closeInterstitialAd);
+        
+        // Initialize interstitial ad timer
+        function initInterstitialAds() {
+            // Show first ad after 10 seconds
+            setTimeout(showInterstitialAd, 10000);
+            
+            // Then show every 10 seconds
+            interstitialInterval = setInterval(showInterstitialAd, 10000);
+        }
+        
+        // Show interstitial ad
+        function showInterstitialAd() {
+            // Reset countdown
+            countdownValue = 10;
+            countdownDisplay.textContent = countdownValue;
+            
+            // Disable close button
+            interstitialClose.disabled = true;
+            interstitialClose.style.cursor = 'not-allowed';
+            
+            // Show the ad
+            interstitialAd.style.display = 'flex';
+            
+            // Start countdown
+            countdownInterval = setInterval(() => {
+                countdownValue--;
+                countdownDisplay.textContent = countdownValue;
+                
+                if (countdownValue <= 0) {
+                    clearInterval(countdownInterval);
+                    interstitialClose.disabled = false;
+                    interstitialClose.style.cursor = 'pointer';
+                }
+            }, 1000);
+        }
+        
+        // Close interstitial ad
+        function closeInterstitialAd() {
+            interstitialAd.style.display = 'none';
+            clearInterval(countdownInterval);
+        }
         
         // Handle file uploads
         function handleFiles(files) {
@@ -504,6 +619,9 @@
             // Placeholder: If you need a specific ad to load in the popup, you would add the SDK call here.
             console.log('Ad popup displayed - potential for additional ad loading');
         }
+        
+        // Initialize the interstitial ads when page loads
+        window.addEventListener('load', initInterstitialAds);
     </script>
 
 </body>
